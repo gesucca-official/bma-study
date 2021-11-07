@@ -6,6 +6,11 @@ export abstract class AbstractCharacter {
     private _mana: number;
     private _stamina: number;
 
+    protected cooldowns = {
+        skill1: 0,
+        skill2: 0
+    }
+
     // @ts-ignore
     protected _ref: Phaser.Physics.Arcade.Sprite;
     // @ts-ignore

@@ -78,7 +78,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.bombs = this.physics.add.group();
 
         //  The score
-        this.scoreText = this.add.text(16, 700, 'score: 0', {fontSize: '32px'});
+        this.scoreText = this.add.text(16, 600, 'score: 0', {fontSize: '32px'});
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(this.player1.getReference(), this.platforms);

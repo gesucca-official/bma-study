@@ -2,8 +2,6 @@ import {AbstractCharacter} from "./AbstractCharacter";
 
 export class Spazienzio extends AbstractCharacter {
 
-    skillTimer = 0;
-
     preload(scene) {
         super.preload(scene);
 
@@ -25,16 +23,26 @@ export class Spazienzio extends AbstractCharacter {
     update(scene, controls) {
         super.update(scene, controls);
 
-        if (this.skillTimer > 0)
-            this.skillTimer--;
+        Object.keys(this.cooldowns).forEach(
+            key => {
+                if (this.cooldowns[key] > 0)
+                    this.cooldowns[key]--;
+            });
 
-        if (controls.skill1.isDown && this.mana > 0 && this.skillTimer == 0) {
-            this.skillTimer = 50;
+        if (controls.skill1.isDown && this.mana > 0 && this.cooldowns.skill1 == 0) {
+            this.cooldowns.skill1 = 50;
             this.mana -= 10;
-            const bottle = scene.physics.add.sprite(this._ref.x, this._ref.y, 'bottle');
+
+            let velocityX = 0;
+            if (this.getReference().anims.currentAnim.key == 'right')
+                velocityX = 330;
+            if (this.getReference().anims.currentAnim.key == 'left')
+                velocityX = -330;
+
+            const bottle = scene.physics.add.sprite(this._ref.x, this._ref.y - 10, 'bottle');
             bottle.setCollideWorldBounds(true);
             bottle.setVelocityY(-330);
-            bottle.setVelocityX(330);
+            bottle.setVelocityX(velocityX);
 
             scene.tweens.add({
                 targets: bottle,
@@ -54,6 +62,12 @@ export class Spazienzio extends AbstractCharacter {
 
                     bottle.destroy();
                 }, null, scene);
+        }
+
+        if (controls.skill3.isDown) {
+            this._ref.setVelocityX(0);
+            this._ref.setVelocityY(0);
+            this.mana += 0.05;
         }
     }
 
