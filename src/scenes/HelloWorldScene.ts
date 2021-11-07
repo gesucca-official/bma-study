@@ -12,6 +12,9 @@ export default class HelloWorldScene extends Phaser.Scene {
     score = 0;
     gameOver = false;
     scoreText;
+    p1health;
+    p1mana;
+    p1stamina;
 
     constructor() {
         super('hello-world')
@@ -23,7 +26,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.load.image('ground', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
-        this.player1.preloadCharacter(this.load);
+        this.player1.preload(this);
     }
 
     create() {
@@ -43,7 +46,11 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.platforms.create(750, 220, 'ground');
 
         this.player1.setPlatforms(this.platforms);
-        this.player1.createCharacter(this);
+        this.player1.create(this);
+
+        this.p1health = this.add.text(16, 16, 'health:' + this.player1.health, {fontSize: '32px'});
+        this.p1mana = this.add.text(16, 32, 'mana:' + this.player1.mana, {fontSize: '32px'});
+        this.p1stamina = this.add.text(16, 48, 'stamina:' + this.player1.stamina, {fontSize: '32px'});
 
         //  Input Events
         this.controls = this.input.keyboard.addKeys({
@@ -71,7 +78,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.bombs = this.physics.add.group();
 
         //  The score
-        this.scoreText = this.add.text(16, 16, 'score: 0', {fontSize: '32px'});
+        this.scoreText = this.add.text(16, 700, 'score: 0', {fontSize: '32px'});
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(this.player1.getReference(), this.platforms);
@@ -81,7 +88,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
         this.physics.add.overlap(this.player1.getReference(), this.stars,
             (player, star) => {
-                star.body.enable = false;
+                star.destroy();
 
                 //  Add and update the score
                 this.score += 10;
@@ -112,7 +119,11 @@ export default class HelloWorldScene extends Phaser.Scene {
         if (this.gameOver) {
             return;
         }
-        this.player1.updateCharacter(this, this.controls);
+        this.player1.update(this, this.controls);
+
+        this.p1health.setText('health:' + this.player1.health);
+        this.p1mana.setText('mana:' + this.player1.mana);
+        this.p1stamina.setText('stamina:' + this.player1.stamina);
     }
 
 }

@@ -2,52 +2,58 @@ import {AbstractCharacter} from "./AbstractCharacter";
 
 export class Spazienzio extends AbstractCharacter {
 
-    preloadCharacter(load) {
-        super.preloadCharacter(load);
+    skillTimer = 0;
 
-        load.image('bottle', 'assets/bottle.png');
-        load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 100, frameHeight: 100});
+    preload(scene) {
+        super.preload(scene);
+
+        scene.load.image('bottle', 'assets/bottle.png');
+        scene.load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 100, frameHeight: 100});
     }
 
-    createCharacter(game) {
-        super.createCharacter(game);
+    create(scene) {
+        super.create(scene);
 
-        game.anims.create({
+        scene.anims.create({
             key: 'boom',
-            frames: game.anims.generateFrameNumbers('explosion', {start: 0, end: 64}),
+            frames: scene.anims.generateFrameNumbers('explosion', {start: 0, end: 64}),
             frameRate: 60,
             repeat: 0
         });
     }
 
-    updateCharacter(game, controls) {
-        super.updateCharacter(game, controls);
+    update(scene, controls) {
+        super.update(scene, controls);
 
-        if (controls.skill1.isDown) {
-            const bottle = game.physics.add.sprite(this.ref.x, this.ref.y, 'bottle');
+        if (this.skillTimer > 0)
+            this.skillTimer--;
+
+        if (controls.skill1.isDown && this.mana > 0 && this.skillTimer == 0) {
+            this.skillTimer = 50;
+            this.mana -= 10;
+            const bottle = scene.physics.add.sprite(this._ref.x, this._ref.y, 'bottle');
             bottle.setCollideWorldBounds(true);
             bottle.setVelocityY(-330);
             bottle.setVelocityX(330);
-            console.log(this.ref);
 
-            game.tweens.add({
+            scene.tweens.add({
                 targets: bottle,
                 angle: 360.0,
                 duration: 750,
                 repeat: -1
             });
 
-            game.physics.add.collider(bottle, this.platformsRef,
+            scene.physics.add.collider(bottle, this.platformsRef,
                 (bottle) => {
-                    const explosion = game.physics.add.sprite(bottle.x, bottle.y, 'explosion');
+                    const explosion = scene.physics.add.sprite(bottle.x, bottle.y, 'explosion');
                     explosion.anims.play('boom', false);
                     explosion.once('animationcomplete', () => {
                         explosion.destroy();
                     });
-                    game.physics.add.collider(explosion, this.platformsRef);
+                    scene.physics.add.collider(explosion, this.platformsRef);
 
                     bottle.destroy();
-                }, null, game);
+                }, null, scene);
         }
     }
 
