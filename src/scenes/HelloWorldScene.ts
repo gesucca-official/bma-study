@@ -122,7 +122,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.player1.update(this, this.controls);
 
         this.p1health.setText('health:' + this.player1.health);
-        this.p1mana.setText('mana:' + this.player1.mana);
+        this.p1mana.setText('mana:' + Math.round(this.player1.mana * 100) / 100);
         this.p1stamina.setText('stamina:' + this.player1.stamina);
     }
 
