@@ -84,10 +84,23 @@ export default class AlphaArenaScene extends Phaser.Scene {
 
     private createPlatforms(): void {
         this.platforms = this.physics.add.staticGroup();
-        for (let x = 0; x < 2560; x += 200) {
-            this.platforms.create(x, 1400, 'ground').setOrigin(0, 0).refreshBody();
+        for (let x = 0; x < 2560; x += 189) {
+            this.platforms.create(x, 1405, 'ground').setOrigin(0, 0).refreshBody();
         }
-        this.platforms.create(100, 1280, 'ground').setOrigin(0, 0).refreshBody();
-        this.platforms.create(250, 1150, 'ground').setOrigin(0, 0).refreshBody();
+        for (let x = 250; x < 2560; x += 450) {
+            this.platforms.create(x, 1280, 'ground').setOrigin(0, 0).refreshBody();
+        }
+        for (let x = 450; x < 2560; x += 450) {
+            this.platforms.create(x, 1150, 'ground').setOrigin(0, 0).refreshBody();
+        }
+        for (let x = 250; x < 2560; x += 450) {
+            this.platforms.create(x, 1050, 'ground').setOrigin(0, 0).refreshBody();
+        }
+        for (let x = 450; x < 2560; x += 450) {
+            this.platforms.create(x, 920, 'ground').setOrigin(0, 0).refreshBody();
+        }
+        for (let x = 50; x < 2560; x += 750) {
+            this.platforms.create(x, 750, 'ground').setOrigin(0, 0).refreshBody();
+        }
     }
 }
