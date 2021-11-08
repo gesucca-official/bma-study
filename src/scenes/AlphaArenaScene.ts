@@ -1,27 +1,33 @@
 import {Spazienzio} from "../characters/Spazienzio";
 import Phaser from "phaser";
+import {AbstractMob} from "../mobs/AbstractMob";
+import {Skeleton} from "../mobs/Skeleton";
+import {AbstractCharacter} from "../characters/AbstractCharacter";
 
 export default class AlphaArenaScene extends Phaser.Scene {
 
-    private player: Spazienzio;
+    private player: AbstractCharacter;
 
     private platforms: Phaser.Physics.Arcade.StaticGroup | undefined;
+    private mobs: AbstractMob[] = [];
 
     private health: Phaser.GameObjects.Text | undefined;
     private mana: Phaser.GameObjects.Text | undefined;
     private stamina: Phaser.GameObjects.Text | undefined;
 
-    private controls: object | undefined;
+    private controls: any;
 
     constructor() {
         super('alpha-arena')
         this.player = new Spazienzio();
+        this.mobs.push(new Skeleton());
     }
 
     preload(): void {
         this.load.image('bg', 'assets/background.jpg');
         this.load.image('ground', 'assets/ground.png');
         this.player.preload(this);
+        this.mobs.forEach(m => m.preload(this));
     }
 
     create(): void {
@@ -30,16 +36,18 @@ export default class AlphaArenaScene extends Phaser.Scene {
         this.add.image(0, 0, 'bg').setOrigin(0, 0);
 
         this.createPlatforms();
-        if (this.platforms == undefined)
-            return;
         this.player.setPlatforms(this.platforms);
         this.player.create(this);
         this.player.getReference().x = 20;
         this.player.getReference().y = 1000;
+        // @ts-ignore
+        this.physics.add.collider(this.player.getReference(), this.platforms);
+
+        this.mobs.forEach(m => m.create(this));
+        // @ts-ignore
+        this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.platforms));
 
         this.createPlayerResourcesText();
-
-        this.physics.add.collider(this.player.getReference(), this.platforms);
 
         this.cameras.main.setBounds(0, 0, 2560, 1440);
         this.physics.world.setBounds(0, 0, 2560, 1440);
@@ -49,6 +57,7 @@ export default class AlphaArenaScene extends Phaser.Scene {
 
     update(): void {
         this.player.update(this, this.controls);
+        this.mobs.forEach(m => m.update(this));
         this.updatePlayerResourcesText();
     }
 
@@ -103,4 +112,5 @@ export default class AlphaArenaScene extends Phaser.Scene {
             this.platforms.create(x, 750, 'ground').setOrigin(0, 0).refreshBody();
         }
     }
+
 }
