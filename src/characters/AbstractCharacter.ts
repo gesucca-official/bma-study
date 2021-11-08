@@ -54,11 +54,13 @@ export abstract class AbstractCharacter {
     public update(scene: Phaser.Scene, controls: Controls): void {
         // movement
         if (controls.left.isDown) {
-            this._ref.setVelocityX(-160);
+            this._ref.setVelocityX(-this.calcMovementSpeed());
             this._ref.anims.play('left', true);
+            this.stamina -= 0.05;
         } else if (controls.right.isDown) {
-            this._ref.setVelocityX(160);
+            this._ref.setVelocityX(this.calcMovementSpeed());
             this._ref.anims.play('right', true);
+            this.stamina -= 0.05;
         } else {
             this._ref.setVelocityX(0);
             this._ref.anims.play('turn');
@@ -66,7 +68,8 @@ export abstract class AbstractCharacter {
 
         // jump
         if (controls.up.isDown && this._ref.body.touching.down) {
-            this._ref.setVelocityY(-330);
+            this._ref.setVelocityY(-this.calcJumpSpeed());
+            this.stamina -= 0.5;
         }
 
         // dive
@@ -76,12 +79,21 @@ export abstract class AbstractCharacter {
         }
     }
 
+    private calcMovementSpeed(): number {
+        return 50 + Math.abs(this.stamina);
+    }
+
+    private calcJumpSpeed(): number {
+        return 200 + Math.abs(this.stamina);
+    }
+
     public getReference(): Phaser.Physics.Arcade.Sprite {
         return this._ref;
     }
 
-    public setPlatforms(platforms: Phaser.Physics.Arcade.StaticGroup): void {
-        this.platformsRef = platforms;
+    public setPlatforms(platforms: Phaser.Physics.Arcade.StaticGroup | undefined): void {
+        if (platforms != undefined)
+            this.platformsRef = platforms;
     }
 
     get health(): number {

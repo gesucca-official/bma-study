@@ -22,7 +22,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('sky', 'assets/sky.png');
+        this.load.image('bg', 'assets/background.jpg');
         this.load.image('ground', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
@@ -31,7 +31,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     create() {
         //  A simple background for our game
-        this.add.image(400, 300, 'sky');
+        this.add.image(0, 0, 'bg').setOrigin(0, 0);
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         this.platforms = this.physics.add.staticGroup();
@@ -49,8 +49,11 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.player1.create(this);
 
         this.p1health = this.add.text(16, 16, 'health:' + this.player1.health, {fontSize: '32px'});
+        this.p1health.setScrollFactor(0);
         this.p1mana = this.add.text(16, 32, 'mana:' + this.player1.mana, {fontSize: '32px'});
+        this.p1mana.setScrollFactor(0);
         this.p1stamina = this.add.text(16, 48, 'stamina:' + this.player1.stamina, {fontSize: '32px'});
+        this.p1stamina.setScrollFactor(0);
 
         //  Input Events
         this.controls = this.input.keyboard.addKeys({
@@ -113,6 +116,10 @@ export default class HelloWorldScene extends Phaser.Scene {
             this.player1.getReference().anims.play('turn');
             this.gameOver = true;
         }, undefined, this);
+
+        this.cameras.main.setBounds(0, 0, 2560, 1440);
+        this.physics.world.setBounds(0, 0, 2560, 1440);
+        this.cameras.main.startFollow(this.player1.getReference(), true, 0.5, 0.5)
     }
 
     update() {

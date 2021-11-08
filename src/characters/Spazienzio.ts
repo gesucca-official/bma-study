@@ -40,6 +40,7 @@ export class Spazienzio extends AbstractCharacter {
             this._ref.setVelocityX(0);
             this._ref.setVelocityY(0);
             this.mana += 0.05;
+            this.stamina += 0.05;
             this._ref.anims.play('turn');
         }
     }
@@ -80,7 +81,7 @@ export class Spazienzio extends AbstractCharacter {
     }
 
     private fist(scene): void {
-        this.cooldowns.skill2 = 10;
+        this.cooldowns.skill2 = 20;
         this.mana -= 5;
 
         const fist = scene.physics.add.image(this._ref.x, this._ref.y, 'fist');
