@@ -39,15 +39,15 @@ export class Spazienzio extends AbstractCharacter {
         if (controls.skill3.isDown) {
             this._ref.setVelocityX(0);
             this._ref.setVelocityY(0);
-            this.mana += 0.05;
-            this.stamina += 0.05;
+            this.changeMana(+0.5);
+            this.changeStamina(+0.5);
             this._ref.anims.play('turn');
         }
     }
 
     private molotov(scene): void {
         this.cooldowns.skill1 = 50;
-        this.mana -= 10;
+        this.changeMana(-10);
 
         let velocityX = 0;
         if (this.getReference().anims.currentAnim.key == 'right')
@@ -82,7 +82,7 @@ export class Spazienzio extends AbstractCharacter {
 
     private fist(scene): void {
         this.cooldowns.skill2 = 20;
-        this.mana -= 5;
+        this.changeMana(-5);
 
         const fist = scene.physics.add.image(this._ref.x, this._ref.y, 'fist');
         setTimeout(() => fist.destroy(), 200);

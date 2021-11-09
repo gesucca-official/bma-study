@@ -3,13 +3,23 @@ export abstract class AbstractMob {
     // @ts-ignore
     private _ref: Phaser.Physics.Arcade.Sprite;
 
+    private readonly spawnX: number;
+    private readonly spawnY: number;
+
+    protected constructor(spawnX: number, spawnY: number) {
+        this.spawnX = spawnX;
+        this.spawnY = spawnY;
+    }
+
     public preload(scene: Phaser.Scene): void {
         scene.load.spritesheet('skeleton', 'assets/skeleton.png', {frameWidth: 60, frameHeight: 60});
     }
 
     public create(scene: Phaser.Scene): void {
-        this._ref = scene.physics.add.sprite(200, 1000, 'skeleton');
+        this._ref = scene.physics.add.sprite(this.spawnX, this.spawnY, 'skeleton');
         this._ref.setCollideWorldBounds(true);
+        this._ref.setBounce(0.2);
+        this._ref.body.mass = 2;
     }
 
     public update(scene: Phaser.Scene): void {

@@ -56,35 +56,29 @@ export abstract class AbstractCharacter {
         if (controls.left.isDown) {
             this._ref.setVelocityX(-this.calcMovementSpeed());
             this._ref.anims.play('left', true);
-            this.stamina -= 0.05;
+            this.changeStamina(-0.05);
         } else if (controls.right.isDown) {
             this._ref.setVelocityX(this.calcMovementSpeed());
             this._ref.anims.play('right', true);
-            this.stamina -= 0.05;
+            this.changeStamina(-0.05);
         } else {
             this._ref.setVelocityX(0);
             this._ref.anims.play('turn');
+            this.changeStamina(+0.05);
         }
 
         // jump
         if (controls.up.isDown && this._ref.body.touching.down) {
             this._ref.setVelocityY(-this.calcJumpSpeed());
-            this.stamina -= 0.5;
+            this.changeStamina(-0.5);
         }
 
         // dive
         if (controls.down.isDown) {
             this._ref.setVelocityX(0);
             this._ref.setVelocityY(350);
+            this.changeStamina(-0.1);
         }
-    }
-
-    private calcMovementSpeed(): number {
-        return 50 + Math.abs(this.stamina);
-    }
-
-    private calcJumpSpeed(): number {
-        return 200 + Math.abs(this.stamina);
     }
 
     public getReference(): Phaser.Physics.Arcade.Sprite {
@@ -100,23 +94,32 @@ export abstract class AbstractCharacter {
         return this._health;
     }
 
-    set health(value: number) {
-        this._health = value;
-    }
-
     get mana(): number {
         return this._mana;
-    }
-
-    set mana(value: number) {
-        this._mana = value;
     }
 
     get stamina(): number {
         return this._stamina;
     }
 
-    set stamina(value: number) {
-        this._stamina = value;
+    protected changeStamina(delta: number): void {
+        this._stamina += delta;
+        if (this._stamina > 100)
+            this._stamina = 100;
     }
+
+    protected changeMana(delta: number): void {
+        this._mana += delta;
+        if (this._mana > 100)
+            this._mana = 100;
+    }
+
+    private calcMovementSpeed(): number {
+        return 50 + Math.abs(this.stamina);
+    }
+
+    private calcJumpSpeed(): number {
+        return 200 + Math.abs(this.stamina);
+    }
+
 }

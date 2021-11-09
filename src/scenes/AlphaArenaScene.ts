@@ -1,5 +1,5 @@
-import {Spazienzio} from "../characters/Spazienzio";
 import Phaser from "phaser";
+import {Spazienzio} from "../characters/Spazienzio";
 import {AbstractMob} from "../mobs/AbstractMob";
 import {Skeleton} from "../mobs/Skeleton";
 import {AbstractCharacter} from "../characters/AbstractCharacter";
@@ -20,7 +20,14 @@ export default class AlphaArenaScene extends Phaser.Scene {
     constructor() {
         super('alpha-arena')
         this.player = new Spazienzio();
-        this.mobs.push(new Skeleton());
+        this.mobs.push(new Skeleton(450, 200));
+        this.mobs.push(new Skeleton(550, 1200));
+        this.mobs.push(new Skeleton(750, 1200));
+        this.mobs.push(new Skeleton(950, 600));
+        this.mobs.push(new Skeleton(1200, 600));
+        this.mobs.push(new Skeleton(1400, 400));
+        this.mobs.push(new Skeleton(1600, 400));
+        this.mobs.push(new Skeleton(2000, 1000));
     }
 
     preload(): void {
@@ -46,13 +53,13 @@ export default class AlphaArenaScene extends Phaser.Scene {
         this.mobs.forEach(m => m.create(this));
         // @ts-ignore
         this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.platforms));
+        this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.player.getReference()));
 
         this.createPlayerResourcesText();
 
         this.cameras.main.setBounds(0, 0, 2560, 1440);
         this.physics.world.setBounds(0, 0, 2560, 1440);
         this.cameras.main.startFollow(this.player.getReference(), true, 0.5, 0.5)
-
     }
 
     update(): void {
