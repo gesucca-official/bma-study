@@ -4,6 +4,8 @@ import {AbstractCharacter} from "../characters/AbstractCharacter";
 
 export abstract class AbstractMob implements Visitor, Visitable {
 
+    private health = 100;
+
     // @ts-ignore
     private _ref: Phaser.Physics.Arcade.Sprite;
 
@@ -32,6 +34,14 @@ export abstract class AbstractMob implements Visitor, Visitable {
 
     public getReference(): Phaser.Physics.Arcade.Sprite {
         return this._ref;
+    }
+
+    public sufferDamage(damage: number) {
+        this.health -= damage;
+    }
+
+    public isDead(): boolean {
+        return this.health <= 0;
     }
 
     accept(v: Visitor): void {

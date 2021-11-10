@@ -57,6 +57,7 @@ export default class AlphaArenaScene extends Phaser.Scene {
             m.visit(this.player);
             this.player.visit(m);
         }));
+        this.player.setMobs(this.mobs);
 
         this.createPlayerResourcesText();
 
@@ -67,6 +68,13 @@ export default class AlphaArenaScene extends Phaser.Scene {
 
     update(): void {
         this.player.update(this, this.controls);
+        // prune dead mobs
+        this.mobs.forEach((mob, index, array) => {
+            if (mob !== undefined && mob.isDead()) {
+                mob.getReference().destroy();
+                array.splice(index, 1);
+            }
+        })
         this.mobs.forEach(m => m.update(this));
         this.updatePlayerResourcesText();
     }

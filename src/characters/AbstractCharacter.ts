@@ -20,6 +20,10 @@ export abstract class AbstractCharacter implements Visitor, Visitable {
     // @ts-ignore
     protected platformsRef: Phaser.Physics.Arcade.StaticGroup;
 
+    // @ts-ignore
+    // references to mobs in scene
+    protected mobs: AbstractMob[];
+
     constructor() {
         this._health = 100;
         this._mana = 100;
@@ -109,6 +113,10 @@ export abstract class AbstractCharacter implements Visitor, Visitable {
 
     public getReference(): Phaser.Physics.Arcade.Sprite {
         return this._ref;
+    }
+
+    public setMobs(mobs: AbstractMob[]) {
+        this.mobs = mobs;
     }
 
     public setPlatforms(platforms: Phaser.Physics.Arcade.StaticGroup | undefined): void {
