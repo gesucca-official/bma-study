@@ -1,4 +1,5 @@
 import {AbstractMob} from "./AbstractMob";
+import {Visitable} from "~/gen/Visitable";
 
 export class Skeleton extends AbstractMob {
 

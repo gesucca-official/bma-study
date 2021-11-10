@@ -1,6 +1,9 @@
 import {Controls} from "~/settings/Controls";
+import {Visitable} from "../gen/Visitable";
+import {Visitor} from "../gen/Visitor";
+import {AbstractMob} from "../mobs/AbstractMob";
 
-export abstract class AbstractCharacter {
+export abstract class AbstractCharacter implements Visitor, Visitable {
 
     private _health: number;
     private _mana: number;
@@ -8,7 +11,8 @@ export abstract class AbstractCharacter {
 
     protected cooldowns = {
         skill1: 0,
-        skill2: 0
+        skill2: 0,
+        damage: 0
     }
 
     // @ts-ignore
@@ -20,6 +24,15 @@ export abstract class AbstractCharacter {
         this._health = 100;
         this._mana = 100;
         this._stamina = 100;
+    }
+
+    public accept(v: Visitor): void {
+        v.visit(this);
+    }
+
+    public visit(v: Visitable): void {
+        if (v instanceof AbstractMob)
+            console.log('visiting mob');
     }
 
     // SCENE METHODS
@@ -52,33 +65,46 @@ export abstract class AbstractCharacter {
     }
 
     public update(scene: Phaser.Scene, controls: Controls): void {
-        // movement
-        if (controls.left.isDown) {
-            this._ref.setVelocityX(-this.calcMovementSpeed());
-            this._ref.anims.play('left', true);
-            this.changeStamina(-0.05);
-        } else if (controls.right.isDown) {
-            this._ref.setVelocityX(this.calcMovementSpeed());
-            this._ref.anims.play('right', true);
-            this.changeStamina(-0.05);
-        } else {
-            this._ref.setVelocityX(0);
-            this._ref.anims.play('turn');
-            this.changeStamina(+0.05);
+        if (this.cooldowns.damage > 0)
+            this.getReference().setTint(0xff0000);
+        else this.getReference().setTint();
+
+        // cant do things while suffering damage
+        if (this.cooldowns.damage == 0) {
+            // movement
+            if (controls.left.isDown) {
+                this._ref.setVelocityX(-this.calcMovementSpeed());
+                this._ref.anims.play('left', true);
+                this.changeStamina(-0.05);
+            } else if (controls.right.isDown) {
+                this._ref.setVelocityX(this.calcMovementSpeed());
+                this._ref.anims.play('right', true);
+                this.changeStamina(-0.05);
+            } else {
+                this._ref.setVelocityX(0);
+                this._ref.anims.play('turn');
+                this.changeStamina(+0.05);
+            }
+
+            // jump
+            if (controls.up.isDown && this._ref.body.touching.down) {
+                this._ref.setVelocityY(-this.calcJumpSpeed());
+                this.changeStamina(-0.5);
+            }
+
+            // dive
+            if (controls.down.isDown) {
+                this._ref.setVelocityX(0);
+                this._ref.setVelocityY(350);
+                this.changeStamina(-0.1);
+            }
         }
 
-        // jump
-        if (controls.up.isDown && this._ref.body.touching.down) {
-            this._ref.setVelocityY(-this.calcJumpSpeed());
-            this.changeStamina(-0.5);
-        }
-
-        // dive
-        if (controls.down.isDown) {
-            this._ref.setVelocityX(0);
-            this._ref.setVelocityY(350);
-            this.changeStamina(-0.1);
-        }
+        // cooldowns
+        Object.keys(this.cooldowns).forEach(key => {
+            if (this.cooldowns[key] > 0)
+                this.cooldowns[key]--;
+        });
     }
 
     public getReference(): Phaser.Physics.Arcade.Sprite {
@@ -100,6 +126,15 @@ export abstract class AbstractCharacter {
 
     get stamina(): number {
         return this._stamina;
+    }
+
+    public sufferDamage(damage: number, cooldown: number) {
+        if (this.cooldowns.damage > 0)
+            return;
+        this.cooldowns.damage = cooldown;
+        this._health -= damage;
+        if (this._health < 0)
+            this._health = 0; // manage game over and stuff
     }
 
     protected changeStamina(delta: number): void {

@@ -24,11 +24,6 @@ export class Spazienzio extends AbstractCharacter {
     update(scene, controls) {
         super.update(scene, controls);
 
-        Object.keys(this.cooldowns).forEach(key => {
-            if (this.cooldowns[key] > 0)
-                this.cooldowns[key]--;
-        });
-
         if (controls.skill1.isDown && this.mana > 0 && this.cooldowns.skill1 == 0)
             this.molotov(scene);
 

@@ -1,4 +1,8 @@
-export abstract class AbstractMob {
+import {Visitable} from "../gen/Visitable";
+import {Visitor} from "../gen/Visitor";
+import {AbstractCharacter} from "../characters/AbstractCharacter";
+
+export abstract class AbstractMob implements Visitor, Visitable {
 
     // @ts-ignore
     private _ref: Phaser.Physics.Arcade.Sprite;
@@ -28,5 +32,19 @@ export abstract class AbstractMob {
 
     public getReference(): Phaser.Physics.Arcade.Sprite {
         return this._ref;
+    }
+
+    accept(v: Visitor): void {
+        v.visit(this);
+    }
+
+    visit(v: Visitable): void {
+        // rough skin damage and recoil
+        if (v instanceof AbstractCharacter) {
+            v.sufferDamage(10, 100);
+            const recoilX = this._ref.x - v.getReference().x;
+            const recoilY = this._ref.y - v.getReference().y;
+            v.getReference().setVelocity(-recoilX * 5, -recoilY * 5);
+        }
     }
 }

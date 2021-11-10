@@ -53,7 +53,10 @@ export default class AlphaArenaScene extends Phaser.Scene {
         this.mobs.forEach(m => m.create(this));
         // @ts-ignore
         this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.platforms));
-        this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.player.getReference()));
+        this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.player.getReference(), () => {
+            m.visit(this.player);
+            this.player.visit(m);
+        }));
 
         this.createPlayerResourcesText();
 
