@@ -1,5 +1,4 @@
 import {AbstractMob} from "./AbstractMob";
-import {Visitable} from "~/gen/Visitable";
 
 export class Skeleton extends AbstractMob {
 
@@ -7,7 +6,18 @@ export class Skeleton extends AbstractMob {
     private walkDirection = -1;
 
     constructor(spawnX: number, spawnY: number) {
-        super(spawnX, spawnY);
+        super(100, spawnX, spawnY);
+    }
+
+    public preload(scene: Phaser.Scene): void {
+        scene.load.spritesheet('skeleton', 'assets/skeleton.png', {frameWidth: 60, frameHeight: 60});
+    }
+
+    public create(scene: Phaser.Scene): void {
+        this._ref = scene.physics.add.sprite(this.spawnX, this.spawnY, 'skeleton');
+        this._ref.setCollideWorldBounds(true);
+        this._ref.setBounce(0.2);
+        this._ref.body.mass = 2;
     }
 
     public update(scene: Phaser.Scene): void {

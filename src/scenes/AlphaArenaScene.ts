@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import {Spazienzio} from "../characters/Spazienzio";
 import {AbstractMob} from "../mobs/AbstractMob";
-import {Skeleton} from "../mobs/Skeleton";
 import {AbstractCharacter} from "../characters/AbstractCharacter";
+import {Ninja} from "../mobs/Ninja";
 
 export default class AlphaArenaScene extends Phaser.Scene {
 
@@ -20,14 +20,14 @@ export default class AlphaArenaScene extends Phaser.Scene {
     constructor() {
         super('alpha-arena')
         this.player = new Spazienzio();
-        this.mobs.push(new Skeleton(450, 200));
-        this.mobs.push(new Skeleton(550, 1200));
-        this.mobs.push(new Skeleton(750, 1200));
-        this.mobs.push(new Skeleton(950, 600));
-        this.mobs.push(new Skeleton(1200, 600));
-        this.mobs.push(new Skeleton(1400, 400));
-        this.mobs.push(new Skeleton(1600, 400));
-        this.mobs.push(new Skeleton(2000, 1000));
+        this.mobs.push(new Ninja(400, 200));
+        this.mobs.push(new Ninja(550, 1200));
+        this.mobs.push(new Ninja(750, 1200));
+        this.mobs.push(new Ninja(950, 600));
+        this.mobs.push(new Ninja(1200, 600));
+        this.mobs.push(new Ninja(1400, 400));
+        this.mobs.push(new Ninja(1600, 400));
+        this.mobs.push(new Ninja(2000, 1000));
     }
 
     preload(): void {

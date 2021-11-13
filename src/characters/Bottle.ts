@@ -31,4 +31,8 @@ export class Bottle extends Phaser.Physics.Arcade.Sprite {
         new Explosion(scene, this.x, this.y, platforms, mobs);
         this.destroy();
     }
+
+    static preload(scene: Phaser.Scene) {
+        scene.load.image('bottle', 'assets/bottle.png');
+    }
 }

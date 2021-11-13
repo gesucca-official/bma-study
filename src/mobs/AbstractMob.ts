@@ -4,33 +4,27 @@ import {AbstractCharacter} from "../characters/AbstractCharacter";
 
 export abstract class AbstractMob implements Visitor, Visitable {
 
-    private health = 100;
+    // todo this should extends sprite
+
+    private health;
 
     // @ts-ignore
-    private _ref: Phaser.Physics.Arcade.Sprite;
+    protected _ref: Phaser.Physics.Arcade.Sprite;
 
-    private readonly spawnX: number;
-    private readonly spawnY: number;
+    protected readonly spawnX: number;
+    protected readonly spawnY: number;
 
-    protected constructor(spawnX: number, spawnY: number) {
+    protected constructor(health: number, spawnX: number, spawnY: number) {
+        this.health = health;
         this.spawnX = spawnX;
         this.spawnY = spawnY;
     }
 
-    public preload(scene: Phaser.Scene): void {
-        scene.load.spritesheet('skeleton', 'assets/skeleton.png', {frameWidth: 60, frameHeight: 60});
-    }
+    public abstract preload(scene: Phaser.Scene): void;
 
-    public create(scene: Phaser.Scene): void {
-        this._ref = scene.physics.add.sprite(this.spawnX, this.spawnY, 'skeleton');
-        this._ref.setCollideWorldBounds(true);
-        this._ref.setBounce(0.2);
-        this._ref.body.mass = 2;
-    }
+    public abstract create(scene: Phaser.Scene): void;
 
-    public update(scene: Phaser.Scene): void {
-        // AI stuff
-    }
+    public abstract update(scene: Phaser.Scene): void;
 
     public getReference(): Phaser.Physics.Arcade.Sprite {
         return this._ref;

@@ -6,8 +6,8 @@ export class Spazienzio extends AbstractCharacter {
 
     preload(scene) {
         super.preload(scene);
-        scene.load.image('bottle', 'assets/bottle.png');
         scene.load.image('fist', 'assets/fist.png');
+        Bottle.preload(scene);
         Explosion.preload(scene);
     }
 
