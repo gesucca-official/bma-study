@@ -1,40 +1,30 @@
-import {Visitable} from "../gen/Visitable";
-import {Visitor} from "../gen/Visitor";
+import {Damageable} from "../gen/interfaces/Damageable";
+import {Visitable} from "../gen/interfaces/Visitable";
+import {Visitor} from "../gen/interfaces/Visitor";
 import {AbstractCharacter} from "../characters/AbstractCharacter";
 
-export abstract class AbstractMob implements Visitor, Visitable {
-
-    // todo this should extends sprite
+export abstract class AbstractMob extends Phaser.Physics.Arcade.Sprite implements Damageable, Visitable, Visitor {
 
     private health;
+    protected player: AbstractCharacter;
+    protected walls: Phaser.Physics.Arcade.StaticGroup;
 
-    // @ts-ignore
-    protected _ref: Phaser.Physics.Arcade.Sprite;
+    protected constructor(scene: Phaser.Scene, key: string, health: number, spawnX: number, spawnY: number,
+                          player: AbstractCharacter, walls: Phaser.Physics.Arcade.StaticGroup) {
+        super(scene, spawnX, spawnY, key);
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
 
-    protected readonly spawnX: number;
-    protected readonly spawnY: number;
-
-    protected constructor(health: number, spawnX: number, spawnY: number) {
         this.health = health;
-        this.spawnX = spawnX;
-        this.spawnY = spawnY;
+        this.player = player;
+        this.walls = walls;
     }
 
-    public abstract preload(scene: Phaser.Scene): void;
+    abstract create(scene?: Phaser.Scene): void;
 
-    public abstract create(scene: Phaser.Scene): void;
+    abstract update(scene?: Phaser.Scene): void;
 
-    public abstract update(scene: Phaser.Scene): void;
-
-    public getReference(): Phaser.Physics.Arcade.Sprite {
-        return this._ref;
-    }
-
-    public sufferDamage(damage: number) {
-        this.health -= damage;
-    }
-
-    public isDead(): boolean {
+    isDead(): boolean {
         return this.health <= 0;
     }
 
@@ -46,9 +36,17 @@ export abstract class AbstractMob implements Visitor, Visitable {
         // rough skin damage and recoil
         if (v instanceof AbstractCharacter) {
             v.sufferDamage(10, 100);
-            const recoilX = this._ref.x - v.getReference().x;
-            const recoilY = this._ref.y - v.getReference().y;
+            const recoilX = this.x - v.getReference().x;
+            const recoilY = this.y - v.getReference().y;
             v.getReference().setVelocity(-recoilX * 5, -recoilY * 5);
         }
+    }
+
+    sufferDamage(damage: number, cooldown?: number): void {
+        this.health -= damage;
+    }
+
+    getSprite(): Phaser.Physics.Arcade.Sprite {
+        return this;
     }
 }

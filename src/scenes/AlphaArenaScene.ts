@@ -1,14 +1,15 @@
 import Phaser from "phaser";
 import {Spazienzio} from "../characters/Spazienzio";
-import {AbstractMob} from "../mobs/AbstractMob";
 import {AbstractCharacter} from "../characters/AbstractCharacter";
 import {Ninja} from "../mobs/Ninja";
+import {AbstractMob} from "~/mobs/AbstractMob";
 
 export default class AlphaArenaScene extends Phaser.Scene {
 
-    private player: AbstractCharacter;
+    // @ts-ignore
+    private platforms: Phaser.Physics.Arcade.StaticGroup;
 
-    private platforms: Phaser.Physics.Arcade.StaticGroup | undefined;
+    private readonly player: AbstractCharacter;
     private mobs: AbstractMob[] = [];
 
     private health: Phaser.GameObjects.Text | undefined;
@@ -20,21 +21,13 @@ export default class AlphaArenaScene extends Phaser.Scene {
     constructor() {
         super('alpha-arena')
         this.player = new Spazienzio();
-        this.mobs.push(new Ninja(400, 200));
-        this.mobs.push(new Ninja(550, 1200));
-        this.mobs.push(new Ninja(750, 1200));
-        this.mobs.push(new Ninja(950, 600));
-        this.mobs.push(new Ninja(1200, 600));
-        this.mobs.push(new Ninja(1400, 400));
-        this.mobs.push(new Ninja(1600, 400));
-        this.mobs.push(new Ninja(2000, 1000));
     }
 
     preload(): void {
         this.load.image('bg', 'assets/background.jpg');
         this.load.image('ground', 'assets/ground.png');
         this.player.preload(this);
-        this.mobs.forEach(m => m.preload(this));
+        Ninja.preload(this);
     }
 
     create(): void {
@@ -50,10 +43,19 @@ export default class AlphaArenaScene extends Phaser.Scene {
         // @ts-ignore
         this.physics.add.collider(this.player.getReference(), this.platforms);
 
+        this.mobs.push(new Ninja(this, 400, 200, this.player, this.platforms));
+        /* this.mobs.push(new Ninja(this, 550, 1200));
+         this.mobs.push(new Ninja(this, 750, 1200));
+         this.mobs.push(new Ninja(this, 950, 600));
+         this.mobs.push(new Ninja(this, 1200, 600));
+         this.mobs.push(new Ninja(this, 1400, 400));
+         this.mobs.push(new Ninja(this, 1600, 400));
+         this.mobs.push(new Ninja(this, 2000, 1000));*/
+
         this.mobs.forEach(m => m.create(this));
         // @ts-ignore
-        this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.platforms));
-        this.mobs.forEach(m => this.physics.add.collider(m.getReference(), this.player.getReference(), () => {
+        this.mobs.forEach(m => this.physics.add.collider(m, this.platforms));
+        this.mobs.forEach(m => this.physics.add.collider(m, this.player.getReference(), () => {
             m.visit(this.player);
             this.player.visit(m);
         }));
@@ -71,7 +73,7 @@ export default class AlphaArenaScene extends Phaser.Scene {
         // prune dead mobs
         this.mobs.forEach((mob, index, array) => {
             if (mob !== undefined && mob.isDead()) {
-                mob.getReference().destroy();
+                mob.destroy();
                 array.splice(index, 1);
             }
         })

@@ -1,9 +1,10 @@
 import {Controls} from "~/settings/Controls";
-import {Visitable} from "../gen/Visitable";
-import {Visitor} from "../gen/Visitor";
+import {Visitable} from "../gen/interfaces/Visitable";
+import {Visitor} from "../gen/interfaces/Visitor";
+import {Damageable} from "../gen/interfaces/Damageable";
 import {AbstractMob} from "../mobs/AbstractMob";
 
-export abstract class AbstractCharacter implements Visitor, Visitable {
+export abstract class AbstractCharacter implements Visitor, Visitable, Damageable {
 
     private _health: number;
     private _mana: number;
@@ -28,6 +29,10 @@ export abstract class AbstractCharacter implements Visitor, Visitable {
         this._health = 100;
         this._mana = 100;
         this._stamina = 100;
+    }
+
+    getSprite(): Phaser.Physics.Arcade.Sprite {
+        return this.getReference();
     }
 
     public accept(v: Visitor): void {

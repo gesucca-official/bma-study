@@ -1,4 +1,4 @@
-import {Visitable} from "~/gen/Visitable";
+import {Visitable} from "~/gen/interfaces/Visitable";
 
 export abstract class Visitor {
 

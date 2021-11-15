@@ -1,6 +1,8 @@
-import {AbstractMob} from "../mobs/AbstractMob";
-import {Visitable} from "../gen/Visitable";
+import {Visitable} from "../gen/interfaces/Visitable";
 import {AbstractCharacter} from "../characters/AbstractCharacter";
+import {AbstractMob} from "./AbstractMob";
+import {Shuriken} from "../projectiles/Shuriken";
+import {GeneralMath2D} from "../gen/GeneralMath2D";
 
 export class Ninja extends AbstractMob {
 
@@ -8,23 +10,24 @@ export class Ninja extends AbstractMob {
     private standStillTimer = 200;
     private walkDirection = -1;
 
+    private shurikens: Shuriken[] = [];
     private shurikenTimer = 500;
 
     private aiInterruptTimer = 0;
 
-    constructor(spawnX: number, spawnY: number) {
-        super(100, spawnX, spawnY);
+    constructor(scene, spawnX: number, spawnY: number, player: AbstractCharacter, walls: Phaser.Physics.Arcade.StaticGroup) {
+        super(scene, 'ninja', 100, spawnX, spawnY, player, walls);
     }
 
-    public preload(scene: Phaser.Scene): void {
+    static preload(scene: Phaser.Scene): void {
         scene.load.spritesheet('ninja', 'assets/mobs/ninja.png', {frameWidth: 64, frameHeight: 64});
+        scene.load.spritesheet('shuriken', 'assets/projectiles/shuriken.png', {frameWidth: 16, frameHeight: 16});
     }
 
     create(scene: Phaser.Scene): void {
-        this._ref = scene.physics.add.sprite(this.spawnX, this.spawnY, 'ninja');
-        this._ref.setCollideWorldBounds(true);
-        this._ref.setBounce(0.2);
-        this._ref.body.mass = 1.5;
+        this.setCollideWorldBounds(true);
+        this.setBounce(0.2);
+        this.body.mass = 1.5;
 
         scene.anims.create({
             key: 'stand',
@@ -51,40 +54,41 @@ export class Ninja extends AbstractMob {
         });
     }
 
-    update(scene: Phaser.Scene): void {
+    update(scene): void {
+        this.shurikens.forEach(s => s.update());
         if (this.aiInterruptTimer > 0) {
             this.aiInterruptTimer--;
             return;
         }
+        if (this.body.touching.down)
+            this.walkAndStand();
         if (this.shurikenTimer > 0)
             this.shurikenTimer--;
-        else this.shuriken();
-        if (this.getReference().body.touching.down)
-            this.walkAndStand();
+        else this.shuriken(scene);
     }
 
     visit(v: Visitable): void {
         super.visit(v);
         this.aiInterruptTimer = 50;
-        this.getReference().setVelocityX(0);
+        this.setVelocityX(0);
         if (v instanceof AbstractCharacter) {
-            const direction = this._ref.x - v.getReference().x;
-            this._ref.flipX = direction > 0;
+            const direction = this.x - v.getReference().x;
+            this.flipX = direction > 0;
         }
-        this._ref.anims.play('kunai');
+        this.anims.play('kunai');
     }
 
     private walkAndStand() {
         if (this.standStillTimer > 0) {
-            this.getReference().setVelocityX(0);
-            this._ref.anims.play('stand', true);
+            this.setVelocityX(0);
+            this.anims.play('stand', true);
             this.standStillTimer--;
             if (this.standStillTimer == 0)
                 this.walkTimer = 200;
         } else if (this.walkTimer > 0) {
-            this.getReference().setVelocityX(100 * this.walkDirection);
-            this._ref.anims.play('run', true);
-            this._ref.flipX = this.walkDirection < 0;
+            this.setVelocityX(100 * this.walkDirection);
+            this.anims.play('run', true);
+            this.flipX = this.walkDirection < 0;
             this.walkTimer--;
             if (this.walkTimer == 0) {
                 this.walkDirection = -this.walkDirection;
@@ -93,9 +97,15 @@ export class Ninja extends AbstractMob {
         }
     }
 
-    private shuriken() {
+    private shuriken(scene) {
         this.aiInterruptTimer = 50;
-        this.getReference().setVelocityX(0);
-        // TODO create shuriken sprite...
+        this.setVelocityX(0);
+        this.anims.play('shuriken', true);
+        this.flipX = this.x - this.player.getReference().x > 0;
+        const xDir = GeneralMath2D.direction(this.x, this.player.getSprite().x);
+        this.shurikens.push(
+            new Shuriken(scene, this.x, this.y, 400 * xDir, 0, 100, this.walls, [this.player])
+        );
+        this.shurikenTimer = 500;
     }
 }

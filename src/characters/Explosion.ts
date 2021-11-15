@@ -1,5 +1,5 @@
-import {Visitable} from "../gen/Visitable";
-import {Visitor} from "../gen/Visitor";
+import {Visitable} from "../gen/interfaces/Visitable";
+import {Visitor} from "../gen/interfaces/Visitor";
 import {AbstractMob} from "../mobs/AbstractMob";
 
 export class Explosion extends Phaser.Physics.Arcade.Sprite implements Visitor {
@@ -14,7 +14,7 @@ export class Explosion extends Phaser.Physics.Arcade.Sprite implements Visitor {
             this.destroy();
         });
         scene.physics.add.collider(this, platforms);
-        mobs.forEach(m => scene.physics.add.overlap(this, m.getReference(), () => this.visit(m)));
+        mobs.forEach(m => scene.physics.add.overlap(this, m, () => this.visit(m)));
     }
 
     visit(v: Visitable): void {
