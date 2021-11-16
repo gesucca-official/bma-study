@@ -6,6 +6,7 @@ import {AbstractCharacter} from "../characters/AbstractCharacter";
 export abstract class AbstractMob extends Phaser.Physics.Arcade.Sprite implements Damageable, Visitable, Visitor {
 
     private health;
+    protected key: string;
     protected player: AbstractCharacter;
     protected walls: Phaser.Physics.Arcade.StaticGroup;
 
@@ -14,6 +15,8 @@ export abstract class AbstractMob extends Phaser.Physics.Arcade.Sprite implement
         super(scene, spawnX, spawnY, key);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+
+        this.key = key;
 
         this.health = health;
         this.player = player;

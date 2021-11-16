@@ -1,10 +1,8 @@
-import {Visitable} from "../gen/interfaces/Visitable";
-import {Visitor} from "../gen/interfaces/Visitor";
-import {AbstractMob} from "../mobs/AbstractMob";
+import {Damageable} from "../gen/interfaces/Damageable";
 
-export class Explosion extends Phaser.Physics.Arcade.Sprite implements Visitor {
+export class Explosion extends Phaser.Physics.Arcade.Sprite {
 
-    constructor(scene, x, y, platforms: Phaser.Physics.Arcade.StaticGroup, mobs: AbstractMob[]) {
+    constructor(scene, x, y, walls: Phaser.Physics.Arcade.StaticGroup, targets: Damageable[]) {
         super(scene, x, y, 'explosion');
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -13,13 +11,12 @@ export class Explosion extends Phaser.Physics.Arcade.Sprite implements Visitor {
         this.once('animationcomplete', () => {
             this.destroy();
         });
-        scene.physics.add.collider(this, platforms);
-        mobs.forEach(m => scene.physics.add.overlap(this, m, () => this.visit(m)));
+        scene.physics.add.collider(this, walls);
+        targets.forEach(t => scene.physics.add.overlap(this, t, () => this.doDamage(t)));
     }
 
-    visit(v: Visitable): void {
-        if (v instanceof AbstractMob)
-            v.sufferDamage(2.5);
+    doDamage(v: any): void {
+        v.sufferDamage(2.5);
     }
 
     static preload(scene: Phaser.Scene) {

@@ -29,4 +29,8 @@ export class Shuriken extends AbstractProjectile {
         this.destroy()
     }
 
+    static preload(scene) {
+        scene.load.spritesheet('shuriken', 'assets/projectiles/shuriken.png', {frameWidth: 16, frameHeight: 16});
+    }
+
 }

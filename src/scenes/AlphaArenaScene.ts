@@ -2,7 +2,8 @@ import Phaser from "phaser";
 import {Spazienzio} from "../characters/Spazienzio";
 import {AbstractCharacter} from "../characters/AbstractCharacter";
 import {Ninja} from "../mobs/Ninja";
-import {AbstractMob} from "~/mobs/AbstractMob";
+import {AbstractMob} from "../mobs/AbstractMob";
+import {Jonin} from "../mobs/Jonin";
 
 export default class AlphaArenaScene extends Phaser.Scene {
 
@@ -28,6 +29,7 @@ export default class AlphaArenaScene extends Phaser.Scene {
         this.load.image('ground', 'assets/ground.png');
         this.player.preload(this);
         Ninja.preload(this);
+        Jonin.preload(this);
     }
 
     create(): void {
@@ -43,7 +45,8 @@ export default class AlphaArenaScene extends Phaser.Scene {
         // @ts-ignore
         this.physics.add.collider(this.player.getReference(), this.platforms);
 
-        this.mobs.push(new Ninja(this, 400, 200, this.player, this.platforms));
+        this.mobs.push(new Jonin(this, 400, 200, this.player, this.platforms));
+        this.mobs.push(new Ninja(this, 600, 200, this.player, this.platforms));
         /* this.mobs.push(new Ninja(this, 550, 1200));
          this.mobs.push(new Ninja(this, 750, 1200));
          this.mobs.push(new Ninja(this, 950, 600));

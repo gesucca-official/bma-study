@@ -1,6 +1,6 @@
 import {AbstractCharacter} from "./AbstractCharacter";
-import {Explosion} from "./Explosion";
-import {Bottle} from "../characters/Bottle";
+import {Explosion} from "../fxs/Explosion";
+import {Bottle} from "../projectiles/Bottle";
 
 export class Spazienzio extends AbstractCharacter {
 

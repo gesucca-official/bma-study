@@ -13,15 +13,15 @@ export class Ninja extends AbstractMob {
     private shurikens: Shuriken[] = [];
     private shurikenTimer = 500;
 
-    private aiInterruptTimer = 0;
+    protected aiInterruptTimer = 0;
 
-    constructor(scene, spawnX: number, spawnY: number, player: AbstractCharacter, walls: Phaser.Physics.Arcade.StaticGroup) {
-        super(scene, 'ninja', 100, spawnX, spawnY, player, walls);
+    constructor(scene, spawnX: number, spawnY: number, player: AbstractCharacter, walls: Phaser.Physics.Arcade.StaticGroup, sprite?: string) {
+        super(scene, sprite ? sprite : 'ninja', 100, spawnX, spawnY, player, walls);
     }
 
     static preload(scene: Phaser.Scene): void {
         scene.load.spritesheet('ninja', 'assets/mobs/ninja.png', {frameWidth: 64, frameHeight: 64});
-        scene.load.spritesheet('shuriken', 'assets/projectiles/shuriken.png', {frameWidth: 16, frameHeight: 16});
+        Shuriken.preload(scene);
     }
 
     create(scene: Phaser.Scene): void {
@@ -30,25 +30,25 @@ export class Ninja extends AbstractMob {
         this.body.mass = 1.5;
 
         scene.anims.create({
-            key: 'stand',
-            frames: scene.anims.generateFrameNumbers('ninja', {start: 0, end: 1}),
+            key: this.key + '-stand',
+            frames: scene.anims.generateFrameNumbers(this.key, {start: 0, end: 1}),
             frameRate: 10,
             repeat: -1,
         });
         scene.anims.create({
-            key: 'run',
-            frames: scene.anims.generateFrameNumbers('ninja', {start: 2, end: 3}),
+            key: this.key + '-run',
+            frames: scene.anims.generateFrameNumbers(this.key, {start: 2, end: 3}),
             frameRate: 10
         });
         scene.anims.create({
-            key: 'shuriken',
-            frames: [{key: 'ninja', frame: 4}],
+            key: this.key + '-shuriken',
+            frames: [{key: this.key, frame: 4}],
             frameRate: 20,
             repeat: -1
         });
         scene.anims.create({
-            key: 'kunai',
-            frames: [{key: 'ninja', frame: 5}],
+            key: this.key + '-kunai',
+            frames: [{key: this.key, frame: 5}],
             frameRate: 20,
             repeat: -1
         });
@@ -56,6 +56,7 @@ export class Ninja extends AbstractMob {
 
     update(scene): void {
         this.shurikens.forEach(s => s.update());
+        // TODO memory leak? not removing destroyed shurikens from array
         if (this.aiInterruptTimer > 0) {
             this.aiInterruptTimer--;
             return;
@@ -81,13 +82,13 @@ export class Ninja extends AbstractMob {
     private walkAndStand() {
         if (this.standStillTimer > 0) {
             this.setVelocityX(0);
-            this.anims.play('stand', true);
+            this.anims.play(this.key + '-stand', true);
             this.standStillTimer--;
             if (this.standStillTimer == 0)
                 this.walkTimer = 200;
         } else if (this.walkTimer > 0) {
             this.setVelocityX(100 * this.walkDirection);
-            this.anims.play('run', true);
+            this.anims.play(this.key + '-run', true);
             this.flipX = this.walkDirection < 0;
             this.walkTimer--;
             if (this.walkTimer == 0) {
@@ -100,7 +101,7 @@ export class Ninja extends AbstractMob {
     private shuriken(scene) {
         this.aiInterruptTimer = 50;
         this.setVelocityX(0);
-        this.anims.play('shuriken', true);
+        this.anims.play(this.key + '-shuriken', true);
         this.flipX = this.x - this.player.getReference().x > 0;
         const xDir = GeneralMath2D.direction(this.x, this.player.getSprite().x);
         this.shurikens.push(
