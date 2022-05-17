@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-
+import MainMenuScene from "./scenes/MainMenuScene";
 import AlphaArenaScene from "./scenes/AlphaArenaScene";
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -14,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
             debug: true
         }
     },
-    scene: [AlphaArenaScene]
+    scene: [MainMenuScene, AlphaArenaScene]
 }
 
 export default new Phaser.Game(config)
